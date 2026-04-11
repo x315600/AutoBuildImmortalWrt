@@ -34,7 +34,7 @@ if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
     echo "✅ 已选择docker : luci-i18n-dockerman-zh-cn"
 fi
-PACKAGES="$PACKAGES frpc luci-app-wechatpush mosdns luci-app-mosdns nikki luci-app-nikki luci-i18n-nikki-zh-cn"
+PACKAGES="$PACKAGES frpc luci-app-wechatpush mosdns luci-app-mosdns nikki luci-app-nikki luci-i18n-nikki-zh-cn lucky luci-app-lucky luci-i18n-lucky-zh-cn"
 # 斐讯N1 无线
 PACKAGES="$PACKAGES perlbase-base perlbase-file perlbase-time perlbase-utf8 perlbase-xsloader"
 # 晶晨宝盒（追加第三方必备软件 用于写入emmc 请不要注释）
@@ -47,6 +47,13 @@ wget -q -O /tmp/nikki-release/nikki.tar.gz https://github.com/nikkinikki-org/Ope
 tar -xzf /tmp/nikki-release/nikki.tar.gz -C /tmp/nikki-release || true
 find /tmp/nikki-release -type f -name "*.ipk" -exec cp -f {} /home/build/immortalwrt/packages/nikki-bin/ \;
 ls -lah /home/build/immortalwrt/packages/nikki-bin || true
+
+# 下载 Lucky 预编译包
+mkdir -p /tmp/lucky-release /home/build/immortalwrt/packages/lucky-bin
+wget -q -O /home/build/immortalwrt/packages/lucky-bin/luci-app-lucky.ipk https://github.com/gdy666/luci-app-lucky/releases/download/v2.19.5/luci-app-lucky_2.2.2-r1_all.ipk
+wget -q -O /home/build/immortalwrt/packages/lucky-bin/luci-i18n-lucky-zh-cn.ipk https://github.com/gdy666/luci-app-lucky/releases/download/v2.19.5/luci-i18n-lucky-zh-cn_25.051.13443.e78d498_all.ipk
+wget -q -O /home/build/immortalwrt/packages/lucky-bin/lucky.ipk https://github.com/gdy666/luci-app-lucky/releases/download/v2.19.5/lucky_2.19.4_Openwrt_arm64.ipk
+ls -lah /home/build/immortalwrt/packages/lucky-bin || true
 
 echo "🔄 正在同步第三方软件仓库 Cloning run file repo..."
 git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo
