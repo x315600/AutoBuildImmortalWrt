@@ -34,21 +34,12 @@ if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
     echo "✅ 已选择docker : luci-i18n-dockerman-zh-cn"
 fi
-PACKAGES="$PACKAGES frpc luci-app-wechatpush mosdns luci-app-mosdns lucky luci-app-lucky luci-i18n-lucky-zh-cn nikki luci-app-nikki luci-i18n-nikki-zh-cn"
+PACKAGES="$PACKAGES frpc luci-app-wechatpush mosdns luci-app-mosdns"
 # 斐讯N1 无线
 PACKAGES="$PACKAGES perlbase-base perlbase-file perlbase-time perlbase-utf8 perlbase-xsloader"
 # 晶晨宝盒（追加第三方必备软件 用于写入emmc 请不要注释）
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-amlogic luci-i18n-amlogic-zh-cn"
 
-
-# 添加第三方插件源
-echo "src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main" >> repositories.conf
-# 拉取第三方 package 源到 packages 目录
-git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git /home/build/immortalwrt/packages/nikki
-git clone --depth=1 https://github.com/sbwml/luci-app-mosdns.git /home/build/immortalwrt/packages/mosdns
-git clone --depth=1 https://github.com/sbwml/v2ray-geodata.git /home/build/immortalwrt/packages/v2ray-geodata
-git clone --depth=1 https://github.com/gdy666/luci-app-lucky.git /home/build/immortalwrt/packages/lucky
-git clone --depth=1 https://github.com/tty228/luci-app-wechatpush.git /home/build/immortalwrt/packages/wechatpush
 
 echo "🔄 正在同步第三方软件仓库 Cloning run file repo..."
 git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo
