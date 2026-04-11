@@ -34,12 +34,19 @@ if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
     echo "✅ 已选择docker : luci-i18n-dockerman-zh-cn"
 fi
-PACKAGES="$PACKAGES frpc luci-app-wechatpush mosdns luci-app-mosdns"
+PACKAGES="$PACKAGES frpc luci-app-wechatpush mosdns luci-app-mosdns nikki luci-app-nikki luci-i18n-nikki-zh-cn"
 # 斐讯N1 无线
 PACKAGES="$PACKAGES perlbase-base perlbase-file perlbase-time perlbase-utf8 perlbase-xsloader"
 # 晶晨宝盒（追加第三方必备软件 用于写入emmc 请不要注释）
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-amlogic luci-i18n-amlogic-zh-cn"
 
+
+# 下载 Nikki 预编译包（适配 aarch64_cortex-a53 / openwrt-24.10）
+mkdir -p /tmp/nikki-release /home/build/immortalwrt/packages/nikki-bin
+wget -q -O /tmp/nikki-release/nikki.tar.gz https://github.com/nikkinikki-org/OpenWrt-nikki/releases/download/v1.26.0/nikki_aarch64_cortex-a53-openwrt-24.10.tar.gz
+tar -xzf /tmp/nikki-release/nikki.tar.gz -C /tmp/nikki-release || true
+find /tmp/nikki-release -type f -name "*.ipk" -exec cp -f {} /home/build/immortalwrt/packages/nikki-bin/ \;
+ls -lah /home/build/immortalwrt/packages/nikki-bin || true
 
 echo "🔄 正在同步第三方软件仓库 Cloning run file repo..."
 git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo
