@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# 默认时区
+uci set system.@system[0].timezone='CST-8'
+uci set system.@system[0].zonename='Asia/Shanghai'
+
+# 默认主题 Argon
+uci set luci.main.mediaurlbase='/luci-static/argon'
+
+uci commit system
+uci commit luci
+
+exit 0
