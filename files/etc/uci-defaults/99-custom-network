@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# N1 默认旁路由模式
+uci set network.lan.proto='static'
+uci set network.lan.ipaddr='192.168.2.254'
+uci set network.lan.netmask='255.255.255.0'
+uci set network.lan.gateway='192.168.2.1'
+uci -q del network.lan.dns
+uci add_list network.lan.dns='192.168.2.1'
+
+# 关闭 LAN DHCP / IPv6 下发，避免与主路由冲突
+uci set dhcp.lan.ignore='1'
+uci set dhcp.lan.ra='disabled'
+uci set dhcp.lan.dhcpv6='disabled'
+uci set dhcp.lan.ndp='disabled'
+
+uci commit network
+uci commit dhcp
+
+/etc/init.d/network restart >/dev/null 2>&1 || true
+/etc/init.d/dnsmasq restart >/dev/null 2>&1 || true
+/etc/init.d/odhcpd restart >/dev/null 2>&1 || true
+
+exit 0
