@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Docker 配置目录
+mkdir -p /etc/docker
+mkdir -p /opt/docker-apps
+
+# Docker 默认配置：保留 IPv6 能力，但不主动启用 Docker 专属 IPv6
+cat > /etc/docker/daemon.json <<'EOC'
+{
+  "iptables": true,
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+EOC
+
+# 允许局域网访问路由器宿主机映射端口
+uci -q add firewall rule
+uci -q set firewall.@rule[-1].name='Allow-LAN-to-Docker-Published-Ports'
+uci -q set firewall.@rule[-1].src='lan'
+uci -q set firewall.@rule[-1].proto='tcp udp'
+uci -q set firewall.@rule[-1].target='ACCEPT'
+
+uci commit firewall
+
+# 启用 Docker 服务（如果已编进固件）
+if [ -x /etc/init.d/dockerd ]; then
+    /etc/init.d/dockerd enable
+fi
+
+# 重载防火墙
+/etc/init.d/firewall restart >/dev/null 2>&1 || true
+
+exit 0
