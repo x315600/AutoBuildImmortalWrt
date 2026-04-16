@@ -13,6 +13,7 @@ clone_or_update() {
   git clone --depth=1 "$repo_url" "$target_dir"
 }
 
+clone_or_update "https://github.com/timsaya/openwrt-bandix" "$PKG_DIR/openwrt-bandix"
 clone_or_update "https://github.com/timsaya/luci-app-bandix" "$PKG_DIR/luci-app-bandix"
 
 clone_or_update "https://github.com/sirpdboy/luci-app-taskplan" "$PKG_DIR/luci-app-taskplan-src"
