@@ -178,15 +178,17 @@ jobs:
         run: |
           chmod +x shell/prepare-third-party.sh
           ./shell/prepare-third-party.sh ${{ github.workspace }}
-           - name: Force latest Bandix
-   run: |
-     set -e
-     BANDIX_DIR="${{ github.workspace }}/package/new/openwrt-bandix"
-     rm -rf "${BANDIX_DIR}"
-     git clone --depth=1 https://github.com/timsaya/openwrt-bandix.git "${BANDIX_DIR}"
-     echo "Bandix commit: $(git -C "${BANDIX_DIR}" rev-parse --short HEAD)"
-     echo "Bandix date : $(git -C "${BANDIX_DIR}" log -1 --format=%cd --date=iso)"
-     find "${{ github.workspace }}/package" -maxdepth 4 -type d -name "*bandix*" ! -path "*/openwrt-bandix*" -exec rm -rf {} +
+
+      - name: Force latest Bandix
+        run: |
+          set -e
+          BANDIX_DIR="${{ github.workspace }}/package/custom/openwrt-bandix"
+          LUCI_BANDIX_DIR="${{ github.workspace }}/package/custom/luci-app-bandix"
+          rm -rf "${BANDIX_DIR}" "${LUCI_BANDIX_DIR}"
+          git clone --depth=1 https://github.com/timsaya/openwrt-bandix.git "${BANDIX_DIR}"
+          git clone --depth=1 https://github.com/timsaya/luci-app-bandix.git "${LUCI_BANDIX_DIR}"
+          echo "Bandix commit: $(git -C "${BANDIX_DIR}" rev-parse --short HEAD)"
+          echo "Bandix date : $(git -C "${BANDIX_DIR}" log -1 --format=%cd --date=iso)"
 
         
       - name: Enable Store integration
