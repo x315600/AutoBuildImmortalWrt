@@ -17,12 +17,37 @@ cat > /etc/docker/daemon.json <<'EOC'
 }
 EOC
 
-# 允许局域网访问路由器宿主机映射端口
-uci -q add firewall rule
-uci -q set firewall.@rule[-1].name='Allow-LAN-to-Docker-Published-Ports'
-uci -q set firewall.@rule[-1].src='lan'
-uci -q set firewall.@rule[-1].proto='tcp udp'
-uci -q set firewall.@rule[-1].target='ACCEPT'
+# 配置 Docker 防火墙区域与转发，确保 LAN 可访问容器映射端口
+uci -q delete firewall.docker
+for idx in $(uci show firewall | grep "=forwarding" | cut -d[ -f2 | cut -d] -f1 | sort -rn); do
+    src=$(uci get firewall.@forwarding[$idx].src 2>/dev/null)
+    dest=$(uci get firewall.@forwarding[$idx].dest 2>/dev/null)
+    if [ "$src" = "docker" ] || [ "$dest" = "docker" ]; then
+        uci -q delete firewall.@forwarding[$idx]
+    fi
+done
+
+cat <<'EOF' >> /etc/config/firewall
+
+config zone 'docker'
+  option name 'docker'
+  option input 'ACCEPT'
+  option output 'ACCEPT'
+  option forward 'ACCEPT'
+  list subnet '172.16.0.0/12'
+
+config forwarding
+  option src 'lan'
+  option dest 'docker'
+
+config forwarding
+  option src 'docker'
+  option dest 'lan'
+
+config forwarding
+  option src 'docker'
+  option dest 'wan'
+EOF
 
 uci commit firewall
 
