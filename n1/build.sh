@@ -69,15 +69,19 @@ mkdir -p /home/build/immortalwrt/packages
 find /home/build/immortalwrt/packages -maxdepth 1 -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
 find /home/build/immortalwrt/extra-packages -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
 if [ "$BANDIX_VERSION" = "latest" ]; then
-    BANDIX_VERSION=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/latest | grep '"tag_name"' | head -n1 | sed -E 's/.*"([^"]+)".*//')
+    BANDIX_VERSION=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*//p' | head -n1)
 fi
 echo "ℹ️ 使用 Bandix 版本: ${BANDIX_VERSION}"
-BANDIX_CORE_ASSET=$(curl -fsSL https://api.github.com/repos/timsaya/openwrt-bandix/releases/tags/${BANDIX_VERSION} | grep -o 'bandix_[^" ]*_aarch64_cortex-a53\.ipk' | head -n1)
-BANDIX_APP_ASSET=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} | grep -o 'luci-app-bandix_[^" ]*_all\.ipk' | head -n1)
-BANDIX_I18N_ASSET=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} | grep -o 'luci-i18n-bandix-zh-cn_[^" ]*_all\.ipk' | head -n1)
-[ -n "$BANDIX_CORE_ASSET" ] && wget -q -O "/home/build/immortalwrt/packages/${BANDIX_CORE_ASSET}" "https://github.com/timsaya/openwrt-bandix/releases/download/${BANDIX_VERSION}/${BANDIX_CORE_ASSET}"
-[ -n "$BANDIX_APP_ASSET" ] && wget -q -O "/home/build/immortalwrt/packages/${BANDIX_APP_ASSET}" "https://github.com/timsaya/luci-app-bandix/releases/download/${BANDIX_VERSION}/${BANDIX_APP_ASSET}"
-[ -n "$BANDIX_I18N_ASSET" ] && wget -q -O "/home/build/immortalwrt/packages/${BANDIX_I18N_ASSET}" "https://github.com/timsaya/luci-app-bandix/releases/download/${BANDIX_VERSION}/${BANDIX_I18N_ASSET}"
+BANDIX_CORE_URL=$(curl -fsSL https://api.github.com/repos/timsaya/openwrt-bandix/releases/tags/${BANDIX_VERSION} | sed -n 's/.*"browser_download_url": "\([^"]*bandix_[^"]*_aarch64_cortex-a53\.ipk\)".*//p' | head -n1)
+BANDIX_APP_URL=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} | sed -n 's/.*"browser_download_url": "\([^"]*luci-app-bandix_[^"]*_all\.ipk\)".*//p' | head -n1)
+BANDIX_I18N_URL=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} | sed -n 's/.*"browser_download_url": "\([^"]*luci-i18n-bandix-zh-cn_[^"]*_all\.ipk\)".*//p' | head -n1)
+[ -n "$BANDIX_CORE_URL" ] || { echo "❌ Bandix core ipk URL not found"; exit 1; }
+[ -n "$BANDIX_APP_URL" ] || { echo "❌ luci-app-bandix ipk URL not found"; exit 1; }
+[ -n "$BANDIX_I18N_URL" ] || { echo "❌ luci-i18n-bandix-zh-cn ipk URL not found"; exit 1; }
+wget -q -P /home/build/immortalwrt/packages "$BANDIX_CORE_URL"
+wget -q -P /home/build/immortalwrt/packages "$BANDIX_APP_URL"
+wget -q -P /home/build/immortalwrt/packages "$BANDIX_I18N_URL"
+ls /home/build/immortalwrt/packages/bandix*.ipk /home/build/immortalwrt/packages/luci-app-bandix*.ipk /home/build/immortalwrt/packages/luci-i18n-bandix-zh-cn*.ipk >/dev/null 2>&1 || { echo "❌ Bandix ipk files missing after download"; exit 1; }
 echo "✅ 已注入 Bandix ${BANDIX_VERSION} 官方 ipk"
 ls -lah /home/build/immortalwrt/packages/ | grep bandix || true
 ls -lah /home/build/immortalwrt/packages/
