@@ -14,7 +14,9 @@ clone_or_update() {
 }
 
 clone_or_update "https://github.com/timsaya/openwrt-bandix" "$PKG_DIR/openwrt-bandix"
+BANDIX_LUCI_REF="${BANDIX_LUCI_REF:-v0.12.6}"
 clone_or_update "https://github.com/timsaya/luci-app-bandix" "$PKG_DIR/luci-app-bandix"
+( cd "$PKG_DIR/luci-app-bandix" && git fetch --depth=1 origin "refs/tags/${BANDIX_LUCI_REF}:refs/tags/${BANDIX_LUCI_REF}" && git checkout -q "${BANDIX_LUCI_REF}" )
 
 clone_or_update "https://github.com/sirpdboy/luci-app-taskplan" "$PKG_DIR/luci-app-taskplan-src"
 
