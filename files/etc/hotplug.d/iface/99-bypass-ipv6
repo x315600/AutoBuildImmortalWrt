@@ -19,6 +19,10 @@ for i in $(seq 1 20); do
     if [ -n "$IPV6_GW" ]; then
         if ip -6 route add default via "$IPV6_GW" dev "$LAN_DEV" 2>/dev/null; then
             echo "[bypass-ipv6] added default route via $IPV6_GW on $LAN_DEV (try $i)" >> "$LOGFILE"
+            if [ -x /etc/init.d/lucky ]; then
+                /etc/init.d/lucky restart >/dev/null 2>&1 || true
+                echo "[bypass-ipv6] restarted lucky after IPv6 route recovery" >> "$LOGFILE"
+            fi
             exit 0
         fi
     fi
