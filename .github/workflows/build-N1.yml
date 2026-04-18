@@ -157,6 +157,10 @@ on:
         type: choice
         options:
           - '1024'
+      bandix_version:
+        description: "Bandix 版本(tag/branch)，默认 v0.12.6"
+        required: false
+        default: 'v0.12.6'
       builder_name:
         description: "设置打包作者的名称"
         required: true
@@ -184,7 +188,7 @@ jobs:
           set -e
           BANDIX_DIR="${{ github.workspace }}/package/custom/openwrt-bandix"
           LUCI_BANDIX_DIR="${{ github.workspace }}/package/custom/luci-app-bandix"
-          LUCI_BANDIX_REF="v0.12.6"
+          LUCI_BANDIX_REF="${{ github.event.inputs.bandix_version || 'v0.12.6' }}"
           rm -rf "${BANDIX_DIR}" "${LUCI_BANDIX_DIR}"
           git clone --depth=1 https://github.com/timsaya/openwrt-bandix.git "${BANDIX_DIR}"
           git clone --depth=1 --branch "${LUCI_BANDIX_REF}" https://github.com/timsaya/luci-app-bandix.git "${LUCI_BANDIX_DIR}"
