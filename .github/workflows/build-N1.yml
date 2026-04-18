@@ -203,6 +203,20 @@ jobs:
           echo "luci-app-bandix date : $(git -C "${LUCI_BANDIX_DIR}" log -1 --format=%cd --date=iso)"
 
         
+      - name: Resolve Bandix version
+        id: resolve_bandix
+        run: |
+          BANDIX_INPUT="${{ github.event.inputs.bandix_version || 'latest' }}"
+          if [ "$BANDIX_INPUT" = "latest" ]; then
+            BANDIX_VERSION=$(gh api repos/timsaya/luci-app-bandix/releases/latest --jq .tag_name)
+          else
+            BANDIX_VERSION="$BANDIX_INPUT"
+          fi
+          [ -n "$BANDIX_VERSION" ] || { echo "Failed to resolve Bandix version"; exit 1; }
+          echo "BANDIX_VERSION=$BANDIX_VERSION" >> $GITHUB_ENV
+          echo "bandix_version=$BANDIX_VERSION" >> $GITHUB_OUTPUT
+          echo "✅ Resolved Bandix version: $BANDIX_VERSION"
+
       - name: Enable Store integration
         run: |
           if [ "${{ github.event.inputs.enable_store }}" == "true" ]; then
@@ -245,6 +259,7 @@ jobs:
               -e PROFILE=$profile \
               -e INCLUDE_DOCKER=$include_docker \
               -e ROOTFS_PARTSIZE=$rootfs_partsize \
+              -e BANDIX_VERSION=${{ env.BANDIX_VERSION }} \
               immortalwrt/imagebuilder:armsr-armv8-openwrt-${luci_version} /bin/bash /home/build/immortalwrt/build.sh
           done
           
