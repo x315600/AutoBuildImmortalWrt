@@ -68,10 +68,7 @@ BANDIX_VERSION="${BANDIX_VERSION:-latest}"
 mkdir -p /home/build/immortalwrt/packages
 find /home/build/immortalwrt/packages -maxdepth 1 -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
 find /home/build/immortalwrt/extra-packages -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
-if [ "$BANDIX_VERSION" = "latest" ] || [ -z "$BANDIX_VERSION" ]; then
-    echo "❌ BANDIX_VERSION was not pre-resolved by workflow"
-    exit 1
-fi
+BANDIX_VERSION="${BANDIX_VERSION:-v0.12.6}"
 echo "ℹ️ 使用 Bandix 版本: ${BANDIX_VERSION}"
 BANDIX_CORE_URL=$(gh api repos/timsaya/openwrt-bandix/releases/tags/${BANDIX_VERSION} --jq '.assets[] | select(.name | test("^bandix_.*_aarch64_cortex-a53\.ipk$")) | .browser_download_url' | head -n1)
 BANDIX_APP_URL=$(gh api repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} --jq '.assets[] | select(.name | test("^luci-app-bandix_.*_all\.ipk$")) | .browser_download_url' | head -n1)
