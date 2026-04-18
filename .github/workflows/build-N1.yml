@@ -275,12 +275,13 @@ jobs:
           echo "FILENAME=$FILENAME" >> $GITHUB_ENV
           KERNEL_VERSION=$(echo "$FILENAME" | grep -oP 'k\d+\.\d+\.\d+')
           LUCI_VERSION="${{ github.event.inputs.luci_version }}"
+          DATE_TAG=$(TZ=Asia/Shanghai date +%Y%m%d)
 
           if [ -n "$PREBUILT_LUCI_VERSION" ]; then
              echo "PREBUILT_LUCI_VERSION is not empty: $PREBUILT_LUCI_VERSION"
-             mv "$FILE" "${{ env.PACKAGED_OUTPUTPATH }}/immortalwrt-$PREBUILT_LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION.img.gz"
+             mv "$FILE" "${{ env.PACKAGED_OUTPUTPATH }}/immortalwrt-$PREBUILT_LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION-$DATE_TAG.img.gz"
           else
-             mv "$FILE" "${{ env.PACKAGED_OUTPUTPATH }}/immortalwrt-$LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION.img.gz"
+             mv "$FILE" "${{ env.PACKAGED_OUTPUTPATH }}/immortalwrt-$LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION-$DATE_TAG.img.gz"
           fi
 
 

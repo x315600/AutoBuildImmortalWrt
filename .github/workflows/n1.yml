@@ -266,11 +266,12 @@ jobs:
           FILENAME=$(basename "$FILE")
           KERNEL_VERSION=$(echo "$FILENAME" | grep -oP 'k\d+\.\d+\.\d+' || echo "unknown-kernel")
           LUCI_VERSION="${{ github.event.inputs.luci_version }}"
+          DATE_TAG=$(TZ=Asia/Shanghai date +%Y%m%d)
 
           if [ -n "$PREBUILT_LUCI_VERSION" ]; then
-             NEW_NAME="immortalwrt-$PREBUILT_LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION.img.gz"
+             NEW_NAME="immortalwrt-$PREBUILT_LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION-$DATE_TAG.img.gz"
           else
-             NEW_NAME="immortalwrt-$LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION.img.gz"
+             NEW_NAME="immortalwrt-$LUCI_VERSION-phicomm-n1-btrfs-$KERNEL_VERSION-$DATE_TAG.img.gz"
           fi
           mv "$FILE" "${{ env.PACKAGED_OUTPUTPATH }}/$NEW_NAME"
 
