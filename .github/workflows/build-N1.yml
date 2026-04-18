@@ -158,9 +158,9 @@ on:
         options:
           - '1024'
       bandix_version:
-        description: "Bandix 版本(tag/branch)，默认 v0.12.6"
+        description: "Bandix 版本(tag/branch)，默认 v0.12.7"
         required: false
-        default: 'v0.12.6'
+        default: 'v0.12.7'
       builder_name:
         description: "设置打包作者的名称"
         required: true
