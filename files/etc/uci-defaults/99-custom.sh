@@ -183,12 +183,6 @@ uci delete ttyd.@ttyd[0].interface
 uci set dropbear.@dropbear[0].Interface=''
 uci commit
 
-# 启用旁路由 IPv6 延迟兜底修复服务
-if [ -x /etc/init.d/bypass-ipv6-fix ]; then
-    /etc/init.d/bypass-ipv6-fix enable >/dev/null 2>&1 || true
-    /etc/init.d/bypass-ipv6-fix start >/dev/null 2>&1 || true
-fi
-
 # 设置编译作者信息
 FILE_PATH="/etc/openwrt_release"
 NEW_DESCRIPTION="Packaged by wukongdaily"

@@ -18,10 +18,6 @@ start_service() {
             if [ -n "$IPV6_GW" ]; then
                 if ip -6 route add default via "$IPV6_GW" dev "$LAN_DEV" 2>/dev/null; then
                     echo "[bypass-ipv6-fix] added default route via $IPV6_GW on $LAN_DEV (round $round)" >> "$LOGFILE"
-                    if [ -x /etc/init.d/lucky ]; then
-                        /etc/init.d/lucky restart >/dev/null 2>&1 || true
-                        echo "[bypass-ipv6-fix] restarted lucky after delayed IPv6 fix" >> "$LOGFILE"
-                    fi
                     exit 0
                 fi
             fi
