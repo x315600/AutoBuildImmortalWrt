@@ -33,7 +33,7 @@ if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
     echo "✅ 已选择docker : luci-i18n-dockerman-zh-cn"
 fi
-PACKAGES="$PACKAGES frpc luci-app-frpc luci-app-wechatpush luci-i18n-wechatpush-zh-cn mosdns luci-app-mosdns luci-i18n-mosdns-zh-cn nikki luci-app-nikki luci-i18n-nikki-zh-cn"
+PACKAGES="$PACKAGES frpc luci-app-frpc luci-i18n-frpc-zh-cn luci-app-wechatpush luci-i18n-wechatpush-zh-cn mosdns luci-app-mosdns luci-i18n-mosdns-zh-cn nikki luci-app-nikki luci-i18n-nikki-zh-cn"
 # 斐讯N1 无线
 PACKAGES="$PACKAGES perlbase-base perlbase-file perlbase-time perlbase-utf8 perlbase-xsloader"
 # 晶晨宝盒（追加第三方必备软件 用于写入emmc 请不要注释）
