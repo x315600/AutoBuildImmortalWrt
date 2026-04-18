@@ -183,6 +183,20 @@ uci delete ttyd.@ttyd[0].interface
 uci set dropbear.@dropbear[0].Interface=''
 uci commit
 
+# 旁路由场景补充 IPv6 默认路由：从 LAN 邻居中的上级路由器学习 fe80:: 网关
+# 适用于无 wan/wan6、仅通过 br-lan 接入主路由的旁路由模式
+if ip -6 route show default | grep -q '^default '; then
+    echo "IPv6 default route already exists, skipping..."
+else
+    LAN_DEV="br-lan"
+    IPV6_GW=$(ip -6 neigh show dev "$LAN_DEV" | awk '/router/ && /fe80::/ {print $1; exit}')
+    if [ -n "$IPV6_GW" ]; then
+        ip -6 route add default via "$IPV6_GW" dev "$LAN_DEV" 2>/dev/null &&             echo "Added IPv6 default route via $IPV6_GW dev $LAN_DEV" >>$LOGFILE
+    else
+        echo "No IPv6 router neighbor found on $LAN_DEV, skip adding default route" >>$LOGFILE
+    fi
+fi
+
 # 设置编译作者信息
 FILE_PATH="/etc/openwrt_release"
 NEW_DESCRIPTION="Packaged by wukongdaily"
