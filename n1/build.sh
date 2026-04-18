@@ -63,9 +63,17 @@ ls -lh /home/build/immortalwrt/extra-packages/*.run
 # 解压并拷贝ipk到packages目录
 sh shell/prepare-packages.sh
 
-# 暂保留预编译 Bandix ipk；ImageBuilder 不会自动编译 package/custom 源码包
-# 后续如需真正固定指定版本，需要在 ImageBuilder 之前先产出对应 ipk 再替换这里的预编译包
- echo "ℹ️ 当前保留 Bandix 预编译 ipk，避免 ImageBuilder 因缺包失败"
+# 使用官方 release 的 Bandix 指定版本 ipk，覆盖 store 中旧版包
+BANDIX_VERSION="${BANDIX_VERSION:-v0.12.6}"
+BANDIX_RELEASE_BASE="https://github.com/timsaya"
+mkdir -p /home/build/immortalwrt/packages
+find /home/build/immortalwrt/packages -maxdepth 1 -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
+find /home/build/immortalwrt/extra-packages -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
+wget -q -O /home/build/immortalwrt/packages/bandix_0.12.6-r1_aarch64_cortex-a53.ipk "${BANDIX_RELEASE_BASE}/openwrt-bandix/releases/download/${BANDIX_VERSION}/bandix_0.12.6-r1_aarch64_cortex-a53.ipk"
+wget -q -O /home/build/immortalwrt/packages/luci-app-bandix_0.12.6-r1_all.ipk "${BANDIX_RELEASE_BASE}/luci-app-bandix/releases/download/${BANDIX_VERSION}/luci-app-bandix_0.12.6-r1_all.ipk"
+wget -q -O /home/build/immortalwrt/packages/luci-i18n-bandix-zh-cn_26.068.39505.1002c41_all.ipk "${BANDIX_RELEASE_BASE}/luci-app-bandix/releases/download/${BANDIX_VERSION}/luci-i18n-bandix-zh-cn_26.068.39505.1002c41_all.ipk"
+echo "✅ 已注入 Bandix ${BANDIX_VERSION} 官方 ipk"
+ls -lah /home/build/immortalwrt/packages/ | grep bandix || true
 ls -lah /home/build/immortalwrt/packages/
 # 添加架构优先级信息
 sed -i '1i\
