@@ -191,7 +191,11 @@ jobs:
           LUCI_BANDIX_REF="${{ github.event.inputs.bandix_version || 'latest' }}"
           rm -rf "${BANDIX_DIR}" "${LUCI_BANDIX_DIR}"
           git clone --depth=1 https://github.com/timsaya/openwrt-bandix.git "${BANDIX_DIR}"
-          git clone --depth=1 --branch "${LUCI_BANDIX_REF}" https://github.com/timsaya/luci-app-bandix.git "${LUCI_BANDIX_DIR}"
+          if [ "$LUCI_BANDIX_REF" = "latest" ]; then
+            git clone --depth=1 https://github.com/timsaya/luci-app-bandix.git "${LUCI_BANDIX_DIR}"
+          else
+            git clone --depth=1 --branch "$LUCI_BANDIX_REF" https://github.com/timsaya/luci-app-bandix.git "${LUCI_BANDIX_DIR}"
+          fi
           echo "openwrt-bandix commit: $(git -C "${BANDIX_DIR}" rev-parse --short HEAD)"
           echo "openwrt-bandix date : $(git -C "${BANDIX_DIR}" log -1 --format=%cd --date=iso)"
           echo "luci-app-bandix ref : ${LUCI_BANDIX_REF}"
