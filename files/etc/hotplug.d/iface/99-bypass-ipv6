@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Auto-fix IPv6 default route for bypass-router mode on br-lan
+# Triggered on iface events; retries briefly until upstream router neighbor appears.
+
+[ "$ACTION" = "ifup" ] || [ "$ACTION" = "ifupdate" ] || exit 0
+[ "$INTERFACE" = "lan" ] || exit 0
+
+LOGFILE="/tmp/uci-defaults-log.txt"
+LAN_DEV="br-lan"
+
+if ip -6 route show default | grep -q '^default '; then
+    echo "[bypass-ipv6] default route already exists" >> "$LOGFILE"
+    exit 0
+fi
+
+for i in $(seq 1 20); do
+    IPV6_GW=$(ip -6 neigh show dev "$LAN_DEV" | awk '/router/ && /fe80::/ {print $1; exit}')
+    if [ -n "$IPV6_GW" ]; then
+        if ip -6 route add default via "$IPV6_GW" dev "$LAN_DEV" 2>/dev/null; then
+            echo "[bypass-ipv6] added default route via $IPV6_GW on $LAN_DEV (try $i)" >> "$LOGFILE"
+            exit 0
+        fi
+    fi
+    sleep 3
+done
+
+echo "[bypass-ipv6] failed to discover IPv6 router neighbor on $LAN_DEV" >> "$LOGFILE"
+exit 0
