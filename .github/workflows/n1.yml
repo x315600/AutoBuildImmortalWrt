@@ -158,9 +158,9 @@ on:
         options:
           - '1024'
       bandix_version:
-        description: "Bandix 版本(tag/branch)，默认 v0.12.6"
+        description: "Bandix 版本(tag/branch)，默认 latest（自动拉取最新 release）"
         required: false
-        default: 'v0.12.6'
+        default: 'latest'
       builder_name:
         description: "设置打包作者的名称"
         required: true
@@ -183,7 +183,7 @@ jobs:
 
       - name: Prepare third-party packages
         env:
-          BANDIX_LUCI_REF: ${{ github.event.inputs.bandix_version || 'v0.12.6' }}
+          BANDIX_LUCI_REF: ${{ github.event.inputs.bandix_version || 'latest' }}
         run: |
           if [ -f "shell/prepare-third-party.sh" ]; then
             chmod +x shell/prepare-third-party.sh

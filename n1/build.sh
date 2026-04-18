@@ -63,15 +63,21 @@ ls -lh /home/build/immortalwrt/extra-packages/*.run
 # 解压并拷贝ipk到packages目录
 sh shell/prepare-packages.sh
 
-# 使用官方 release 的 Bandix 指定版本 ipk，覆盖 store 中旧版包
-BANDIX_VERSION="${BANDIX_VERSION:-v0.12.6}"
-BANDIX_RELEASE_BASE="https://github.com/timsaya"
+# 使用官方 release 的 Bandix ipk，默认自动拉取最新 release，也支持手动指定版本
+BANDIX_VERSION="${BANDIX_VERSION:-latest}"
 mkdir -p /home/build/immortalwrt/packages
 find /home/build/immortalwrt/packages -maxdepth 1 -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
 find /home/build/immortalwrt/extra-packages -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
-wget -q -O /home/build/immortalwrt/packages/bandix_0.12.6-r1_aarch64_cortex-a53.ipk "${BANDIX_RELEASE_BASE}/openwrt-bandix/releases/download/${BANDIX_VERSION}/bandix_0.12.6-r1_aarch64_cortex-a53.ipk"
-wget -q -O /home/build/immortalwrt/packages/luci-app-bandix_0.12.6-r1_all.ipk "${BANDIX_RELEASE_BASE}/luci-app-bandix/releases/download/${BANDIX_VERSION}/luci-app-bandix_0.12.6-r1_all.ipk"
-wget -q -O /home/build/immortalwrt/packages/luci-i18n-bandix-zh-cn_26.068.39505.1002c41_all.ipk "${BANDIX_RELEASE_BASE}/luci-app-bandix/releases/download/${BANDIX_VERSION}/luci-i18n-bandix-zh-cn_26.068.39505.1002c41_all.ipk"
+if [ "$BANDIX_VERSION" = "latest" ]; then
+    BANDIX_VERSION=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/latest | grep '"tag_name"' | head -n1 | sed -E 's/.*"([^"]+)".*//')
+fi
+echo "ℹ️ 使用 Bandix 版本: ${BANDIX_VERSION}"
+BANDIX_CORE_ASSET=$(curl -fsSL https://api.github.com/repos/timsaya/openwrt-bandix/releases/tags/${BANDIX_VERSION} | grep -o 'bandix_[^" ]*_aarch64_cortex-a53\.ipk' | head -n1)
+BANDIX_APP_ASSET=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} | grep -o 'luci-app-bandix_[^" ]*_all\.ipk' | head -n1)
+BANDIX_I18N_ASSET=$(curl -fsSL https://api.github.com/repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} | grep -o 'luci-i18n-bandix-zh-cn_[^" ]*_all\.ipk' | head -n1)
+[ -n "$BANDIX_CORE_ASSET" ] && wget -q -O "/home/build/immortalwrt/packages/${BANDIX_CORE_ASSET}" "https://github.com/timsaya/openwrt-bandix/releases/download/${BANDIX_VERSION}/${BANDIX_CORE_ASSET}"
+[ -n "$BANDIX_APP_ASSET" ] && wget -q -O "/home/build/immortalwrt/packages/${BANDIX_APP_ASSET}" "https://github.com/timsaya/luci-app-bandix/releases/download/${BANDIX_VERSION}/${BANDIX_APP_ASSET}"
+[ -n "$BANDIX_I18N_ASSET" ] && wget -q -O "/home/build/immortalwrt/packages/${BANDIX_I18N_ASSET}" "https://github.com/timsaya/luci-app-bandix/releases/download/${BANDIX_VERSION}/${BANDIX_I18N_ASSET}"
 echo "✅ 已注入 Bandix ${BANDIX_VERSION} 官方 ipk"
 ls -lah /home/build/immortalwrt/packages/ | grep bandix || true
 ls -lah /home/build/immortalwrt/packages/
