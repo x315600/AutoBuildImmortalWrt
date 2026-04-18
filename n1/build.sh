@@ -62,6 +62,12 @@ echo "✅ Run files copied to extra-packages:"
 ls -lh /home/build/immortalwrt/extra-packages/*.run
 # 解压并拷贝ipk到packages目录
 sh shell/prepare-packages.sh
+
+# 清理 store/extra-packages 中可能覆盖源码版本的旧 Bandix 预编译包
+find /home/build/immortalwrt/packages -maxdepth 1 -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -print -delete || true
+find /home/build/immortalwrt/extra-packages -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -print -delete || true
+
+echo "✅ 已移除旧版 Bandix 预编译 ipk，避免覆盖源码版本"
 ls -lah /home/build/immortalwrt/packages/
 # 添加架构优先级信息
 sed -i '1i\
