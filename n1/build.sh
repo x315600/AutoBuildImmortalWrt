@@ -64,7 +64,6 @@ ls -lh /home/build/immortalwrt/extra-packages/*.run
 sh shell/prepare-packages.sh
 
 # 使用官方 release 的 Bandix ipk，默认自动拉取最新 release，也支持手动指定版本
-BANDIX_VERSION="${BANDIX_VERSION:-latest}"
 mkdir -p /home/build/immortalwrt/packages
 find /home/build/immortalwrt/packages -maxdepth 1 -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
 find /home/build/immortalwrt/extra-packages -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
