@@ -30,8 +30,14 @@ PACKAGES="$PACKAGES openssh-sftp-server lucky luci-app-lucky"
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # 判断是否需要编译 Docker 插件
 if [ "$INCLUDE_DOCKER" = "yes" ]; then
-    PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
-    echo "✅ 已选择docker : luci-i18n-dockerman-zh-cn"
+    PACKAGES="$PACKAGES docker dockerd docker-compose luci-app-dockerman luci-i18n-dockerman-zh-cn"
+    mkdir -p files/etc/uci-defaults
+    cp -f /home/build/immortalwrt/files/etc/uci-defaults/99-custom-docker files/etc/uci-defaults/99-custom-docker 2>/dev/null || true
+    echo "✅ 已选择docker : docker dockerd docker-compose luci-app-dockerman luci-i18n-dockerman-zh-cn"
+else
+    PACKAGES="$PACKAGES -docker -dockerd -docker-compose -luci-app-dockerman -luci-i18n-dockerman-zh-cn"
+    rm -f files/etc/uci-defaults/99-custom-docker 2>/dev/null || true
+    echo "⚪️ 未选择docker，已排除 Docker 相关组件"
 fi
 PACKAGES="$PACKAGES frpc luci-app-frpc luci-i18n-frpc-zh-cn luci-app-wechatpush luci-i18n-wechatpush-zh-cn mosdns luci-app-mosdns luci-i18n-mosdns-zh-cn nikki luci-app-nikki luci-i18n-nikki-zh-cn"
 # 斐讯N1 无线

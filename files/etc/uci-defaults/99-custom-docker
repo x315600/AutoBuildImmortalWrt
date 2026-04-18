@@ -8,6 +8,7 @@ mkdir -p /opt/docker-apps
 cat > /etc/docker/daemon.json <<'EOC'
 {
   "iptables": true,
+  "data-root": "/opt/docker-apps",
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "10m",
