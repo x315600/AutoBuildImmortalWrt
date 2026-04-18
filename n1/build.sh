@@ -69,12 +69,14 @@ find /home/build/immortalwrt/packages -maxdepth 1 -type f \( -name 'bandix*.ipk'
 find /home/build/immortalwrt/extra-packages -type f \( -name 'bandix*.ipk' -o -name 'luci-app-bandix*.ipk' -o -name 'luci-i18n-bandix-zh-cn*.ipk' \) -delete || true
 BANDIX_VERSION="${BANDIX_VERSION:-v0.12.6}"
 echo "ℹ️ 使用 Bandix 版本: ${BANDIX_VERSION}"
-BANDIX_CORE_URL=$(gh api repos/timsaya/openwrt-bandix/releases/tags/${BANDIX_VERSION} --jq '.assets[] | select(.name | test("^bandix_.*_aarch64_cortex-a53\.ipk$")) | .browser_download_url' | head -n1)
-BANDIX_APP_URL=$(gh api repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} --jq '.assets[] | select(.name | test("^luci-app-bandix_.*_all\.ipk$")) | .browser_download_url' | head -n1)
-BANDIX_I18N_URL=$(gh api repos/timsaya/luci-app-bandix/releases/tags/${BANDIX_VERSION} --jq '.assets[] | select(.name | test("^luci-i18n-bandix-zh-cn_.*_all\.ipk$")) | .browser_download_url' | head -n1)
-[ -n "$BANDIX_CORE_URL" ] || { echo "❌ Bandix core ipk URL not found"; exit 1; }
-[ -n "$BANDIX_APP_URL" ] || { echo "❌ luci-app-bandix ipk URL not found"; exit 1; }
-[ -n "$BANDIX_I18N_URL" ] || { echo "❌ luci-i18n-bandix-zh-cn ipk URL not found"; exit 1; }
+if [ "$BANDIX_VERSION" = "v0.12.6" ]; then
+    BANDIX_CORE_URL="https://github.com/timsaya/openwrt-bandix/releases/download/v0.12.6/bandix_0.12.6-r1_aarch64_cortex-a53.ipk"
+    BANDIX_APP_URL="https://github.com/timsaya/luci-app-bandix/releases/download/v0.12.6/luci-app-bandix_0.12.6-r1_all.ipk"
+    BANDIX_I18N_URL="https://github.com/timsaya/luci-app-bandix/releases/download/v0.12.6/luci-i18n-bandix-zh-cn_26.068.39505.1002c41_all.ipk"
+else
+    echo "❌ Unsupported fixed Bandix version: ${BANDIX_VERSION}"
+    exit 1
+fi
 wget -q -P /home/build/immortalwrt/packages "$BANDIX_CORE_URL"
 wget -q -P /home/build/immortalwrt/packages "$BANDIX_APP_URL"
 wget -q -P /home/build/immortalwrt/packages "$BANDIX_I18N_URL"
