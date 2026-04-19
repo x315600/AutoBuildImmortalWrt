@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Incrementally configure bypass-router IPv6 on LAN without replacing /etc/config/network
+uci -q set network.lan.delegate='0'
+uci -q delete network.lan6
+uci -q set network.lan6='interface'
+uci -q set network.lan6.proto='dhcpv6'
+uci -q set network.lan6.device='@lan'
+uci -q set network.lan6.reqaddress='try'
+uci -q set network.lan6.reqprefix='auto'
+uci -q set network.lan6.norelease='1'
+uci -q commit network
+/etc/init.d/network reload >/dev/null 2>&1 || true
+exit 0
